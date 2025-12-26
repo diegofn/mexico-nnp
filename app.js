@@ -25,28 +25,20 @@ app.use('/mexican-nnp', mexicanNNPRoute);
 // Set the consts
 //
 const port = process.env.PORT || 3000;
-const MEXICAN_PNM_URL = process.env.MEXICAN_PNM_URL;
-if (!MEXICAN_PNM_URL) {
+const MEXICAN_PNN_FILENAME = process.env.MEXICAN_PNN_FILENAME;
+if (!MEXICAN_PNN_FILENAME) {
     console.error("Missing required environment variables.");
     process.exit(1);
 }
 
 //
-// Public folder
-//
-app.use(express.static('public'));
-
-
-//
-// Create a WebSocket server
-//
-const server = http.createServer(app);
-wsServer.init(server); 
-
-//
 // Start the webservice 
 //
-server.listen(port, function() {
+const server = app.listen(port, function() {
     console.log('Listening on port %d', server.address().port);
 });
 
+//
+// Public folder
+//
+app.use(express.static('public'));
