@@ -21,5 +21,5 @@ $ npm install
 3. Configure the .env
 ```Shell
 PORT = 3000
-MEXICAN_PNM_URL = https://sns.ift.org.mx:8081/sns-frontend/planes-numeracion/descarga-publica.xhtml
+MEXICAN_PNN_FILENAME = pnn_Publico_Latest.csv
 ```
