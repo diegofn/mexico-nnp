@@ -100,8 +100,8 @@ async function findPhoneInPNN(phone) {
     for (const row of pnnRows) {
         const startRaw = row.NUMERACION_INICIAL || row['NUMERACION_INICIAL'] || '';
         const endRaw = row.NUMERACION_FINAL || row['NUMERACION_FINAL'] || '';
-        const start = cleanNumber(startRaw);
-        const end = cleanNumber(endRaw);
+        const start = startRaw;
+        const end = endRaw;
         if (!start || !end) continue;
         try {
             const t = BigInt(target);
@@ -116,7 +116,22 @@ async function findPhoneInPNN(phone) {
     return null;
 }
 
+//
+// Watch the PNN CSV file for changes to reload
+//
+/*try {
+    fs.watch(PNN_CSV_PATH, { persistent: false }, (evt) => {
+        console.log('PNN CSV change detected -> reloading');
+        loadPNNFile(true).catch(err => LOG.error('Reload failed:', err));
+    });
+} catch (e) {
+    console.log('PNN CSV watcher could not be established:', e && e.message ? e.message : e);
+}
+*/
+
+//
 // expose helpers on router for external testing
+//
 router.loadPNNFile = loadPNNFile;
 router.findPhoneInPNN = findPhoneInPNN;
 
