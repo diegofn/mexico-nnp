@@ -25,8 +25,8 @@ app.use('/mexican-nnp', mexicanNNPRoute);
 // Set the consts
 //
 const port = process.env.PORT || 3000;
-const MEXICAN_PNN_FILENAME = process.env.MEXICAN_PNN_FILENAME;
-if (!MEXICAN_PNN_FILENAME) {
+const MEXICAN_NNP_FILENAME = process.env.MEXICAN_NNP_FILENAME;
+if (!MEXICAN_NNP_FILENAME) {
     console.error("Missing required environment variables.");
     process.exit(1);
 }

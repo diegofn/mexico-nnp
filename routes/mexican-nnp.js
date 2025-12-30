@@ -3,32 +3,33 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: '.env' });
+const LOG = console;
 const router = express.Router();
 
 //
-// Mexican PNN / for Mexican PNN Integration
+// Mexican NNP / for Mexican NNP Integration
 //
 router.get('/', async function(req, res){
     res.status(200)
-    res.send(`Mexican PNN Webhook successfully running`)  
+    res.send(`Mexican NNP Webhook successfully running`)  
 });
 
 //
-// Find a phone number in the Mexican PNN
+// Find a phone number in the Mexican NNP
 //
 router.post('/', async function(req, res){
     try {
         const phone = req.body.phone;
         if (!phone) return res.status(400).json({ error: 'phone query required' });
         
-        const row = await findPhoneInPNN(phone);
+        const row = await findPhoneInNNP(phone);
         if (!row) 
             return res.status(404).json({ found: false });
         
         //
         // Return found row
         //
-        return res.status(200).json({ found: true, data: row });
+        return res.status(200).json({ found: true, data: row.MODALIDAD || row['MODALIDAD'] });
     } catch (err) {
         LOG.error('Lookup error:', err);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -36,10 +37,10 @@ router.post('/', async function(req, res){
 });
 
 //
-// PNN file loading and searching
+// NNP file loading and searching
 //
-const PNN_CSV_PATH = path.join(__dirname, '..', 'public', process.env.MEXICAN_PNN_FILENAME || 'pnn_Publico_Latest.csv');
-let pnnRows = null;
+const NNP_CSV_PATH = path.join(__dirname, '..', 'public', process.env.MEXICAN_NNP_FILENAME || 'pnn_Publico_Latest.csv');
+let nnpRows = null;
 
 function parseCSVLine(line) {
     const result = [];
@@ -65,21 +66,21 @@ function parseCSVLine(line) {
     return result;
 }
 
-async function loadPNNFile() {
+async function loadNNPFile() {
     try {
-        const data = await fs.promises.readFile(PNN_CSV_PATH, 'utf8');
+        const data = await fs.promises.readFile(NNP_CSV_PATH, 'utf8');
         const lines = data.split(/\r?\n/).filter(l => l.trim() !== '');
         if (lines.length === 0) return [];
         const headers = parseCSVLine(lines.shift()).map(h => h.trim());
-        pnnRows = lines.map(line => {
+        nnpRows = lines.map(line => {
             const vals = parseCSVLine(line);
             const obj = {};
             headers.forEach((h, idx) => { obj[h] = (vals[idx] !== undefined) ? vals[idx] : ''; });
             return obj;
         });
-        return pnnRows;
+        return nnpRows;
     } catch (err) {
-        console.error('Error loading PNN CSV:', err);
+        LOG.error('Error loading NNP CSV:', err);
         throw err;
     }
 }
@@ -89,15 +90,15 @@ function cleanNumber(s) {
     return String(s).replace(/\D/g, '');
 }
 
-async function findPhoneInPNN(phone) {
-    if (!pnnRows) await loadPNNFile();
+async function findPhoneInNNP(phone) {
+    if (!nnpRows) await loadNNPFile();
     const target = cleanNumber(phone);
     if (!target) return null;
 
     //
-    // Look for the phone in the PNN ranges
+    // Look for the phone in the NNP ranges
     //
-    for (const row of pnnRows) {
+    for (const row of nnpRows) {
         const startRaw = row.NUMERACION_INICIAL || row['NUMERACION_INICIAL'] || '';
         const endRaw = row.NUMERACION_FINAL || row['NUMERACION_FINAL'] || '';
         const start = startRaw;
@@ -117,22 +118,22 @@ async function findPhoneInPNN(phone) {
 }
 
 //
-// Watch the PNN CSV file for changes to reload
+// Watch the NNP CSV file for changes to reload
 //
 /*try {
-    fs.watch(PNN_CSV_PATH, { persistent: false }, (evt) => {
-        console.log('PNN CSV change detected -> reloading');
-        loadPNNFile(true).catch(err => LOG.error('Reload failed:', err));
+    fs.watch(NNP_CSV_PATH, { persistent: false }, (evt) => {
+        console.log('NNP CSV change detected -> reloading');
+        loadNNPFile(true).catch(err => LOG.error('Reload failed:', err));
     });
 } catch (e) {
-    console.log('PNN CSV watcher could not be established:', e && e.message ? e.message : e);
+    console.log('NNP CSV watcher could not be established:', e && e.message ? e.message : e);
 }
 */
 
 //
 // expose helpers on router for external testing
 //
-router.loadPNNFile = loadPNNFile;
-router.findPhoneInPNN = findPhoneInPNN;
+router.loadNNPFile = loadNNPFile;
+router.findPhoneInNNP = findPhoneInNNP;
 
 module.exports = router;

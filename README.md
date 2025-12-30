@@ -1,9 +1,9 @@
-# mexico-nnp
-Webservice to query class of service (fixed or mobile) based on the Mexico National Numbering for a CCaaS solutions like Webex Calling 
+# mexican-nnp
+Webservice to query class of service (fixed or mobile) based on the Mexican National Numbering Plan for a CCaaS solutions like Webex Calling 
 
 ## Features
-- Download the Mexican PNM from: https://sns.ift.org.mx:8081/sns-frontend/planes-numeracion/descarga-publica.xhtml
-- Query a DNIS number and get the PNM information zone, class of service, etc. 
+- Download the Mexican NPP from: https://sns.ift.org.mx:8081/sns-frontend/planes-numeracion/descarga-publica.xhtml
+- Query a DNIS number and get the NNP information zone, class of service, etc. 
 
 ## Compile and install
 
@@ -21,5 +21,5 @@ $ npm install
 3. Configure the .env
 ```Shell
 PORT = 3000
-MEXICAN_PNN_FILENAME = pnn_Publico_Latest.csv
+MEXICAN_NNP_FILENAME = pnn_Publico_Latest.csv
 ```

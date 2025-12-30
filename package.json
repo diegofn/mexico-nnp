@@ -1,8 +1,8 @@
 {
-  "name": "mexico-nnp",
+  "name": "mexican-nnp",
   "version": "1.0.0",
   "private": true,
-  "description": "Mexican PNM Webservice",
+  "description": "Mexican National Numbering Plan Webservice",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
